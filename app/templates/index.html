@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopeeBoost</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script>
+        // Função para gerar ideias de conteúdo
+        async function generateContentIdea(event) {
+            event.preventDefault();
+
+            const product_name = document.getElementById("product_name").value;
+            const audience = document.getElementById("audience").value;
+
+            const response = await fetch('/features/generate-ideas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_name, audience })
+            });
+
+            const result = await response.json();
+            document.getElementById("content_result").innerText = `Video Idea: ${result.video_idea}\nCaption: ${result.caption}`;
+        }
+
+        // Função para encurtar links
+        async function shortenLink(event) {
+            event.preventDefault();
+
+            const original_url = document.getElementById("original_url").value;
+            const source = document.getElementById("source").value;
+
+            const response = await fetch('/features/shorten-link', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ original_url, source })
+            });
+
+            const result = await response.json();
+            document.getElementById("link_result").innerHTML = `Shortened Link: <a href="${result.shortened_url}" target="_blank">${result.shortened_url}</a>`;
+        }
+
+        // Função para obter feedback de produtos
+        async function getProductFeedback(event) {
+            event.preventDefault();
+
+            const product_url = document.getElementById("product_url").value;
+
+            const response = await fetch('/features/product-feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ product_url })
+            });
+
+            const result = await response.json();
+            document.getElementById("feedback_result").innerText = `
+                Audience: ${result.audience}\n
+                Marketing Strategies: ${result.marketing_strategies}\n
+                Viral Video Ideas: ${result.viral_video_ideas}`;
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>ShopeeBoost</h1>
+        <p>Impulsione suas vendas na Shopee com ferramentas poderosas.</p>
+    </header>
+
+    <main>
+        <!-- Gerar Ideias de Conteúdo -->
+        <section>
+            <h2>Gerar Ideias de Conteúdo</h2>
+            <form onsubmit="generateContentIdea(event)">
+                <label for="product_name">Nome do Produto:</label>
+                <input type="text" id="product_name" required>
+                <label for="audience">Público-Alvo:</label>
+                <input type="text" id="audience" required>
+                <button type="submit">Gerar Ideias</button>
+            </form>
+            <div id="content_result"></div>
+        </section>
+
+        <!-- Encurtar Links -->
+        <section>
+            <h2>Encurtar Links</h2>
+            <form onsubmit="shortenLink(event)">
+                <label for="original_url">URL Original:</label>
+                <input type="url" id="original_url" required>
+                <label for="source">Fonte (Instagram, TikTok, etc.):</label>
+                <input type="text" id="source" required>
+                <button type="submit">Encurtar Link</button>
+            </form>
+            <div id="link_result"></div>
+        </section>
+
+        <!-- Obter Feedback do Produto -->
+        <section>
+            <h2>Obter Feedback do Produto</h2>
+            <form onsubmit="getProductFeedback(event)">
+                <label for="product_url">URL do Produto:</label>
+                <input type="url" id="product_url" required>
+                <button type="submit">Obter Feedback</button>
+            </form>
+            <div id="feedback_result"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 ShopeeBoost. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>
