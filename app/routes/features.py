@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template
+from flask import Blueprint, request, jsonify, render_template, redirect,session
 from ..models import ContentIdea, ShortenedLink, ProductFeedback, db,Product
 from app.routes import features_bp
 import random
@@ -59,6 +59,7 @@ def generateIdeas():
 
     new_product = Product(
         id=str(uuid.uuid4()),
+        user=session["user"],
         title=nome_produto,
         description=descricao,
         price=float(preco),
@@ -77,6 +78,35 @@ def generateIdeas():
         "id": new_product.id
     })
 
+@features_bp.route("/api/update-product/<id>", methods=["POST"])
+def updateProduct(id):
+    data = request.get_json()
 
+        # Validação básica dos dados
+    if not data or "info" not in data or "newInfo" not in data:
+        return jsonify({"msg": "Invalid data"}), 400
 
-    
+    info = data["info"]
+    newInfo = data["newInfo"]
+
+    # Busca pelo produto
+    product = Product.query.filter_by(id=id).first()
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    # Atualização do atributo de forma dinâmica
+    setattr(product, info, newInfo)
+
+    # Tentativa de salvar no banco
+    db.session.commit()
+
+    return jsonify({"msg": "success"}), 200
+                                                
+@features_bp.route("/remove-product/<id>")
+def removeProduct(id):
+    user = session["user"]
+    product = Product.query.filter_by(id=id).first()
+    if user == product.user:
+        db.session.delete(product)
+        db.session.commit()
+        return redirect("/")

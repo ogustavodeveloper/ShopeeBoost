@@ -61,6 +61,7 @@ class Video(db.Model):
 
 class Product(db.Model):
     id = db.Column(db.String(), primary_key=True)
+    user = db.Column(db.String())
     title = db.Column(db.String())
     description = db.Column(db.String())
     price = db.Column(db.Float)
@@ -72,8 +73,9 @@ class Product(db.Model):
     publico = db.Column(db.String())
     ideias_videos = db.Column(db.String())
 
-    def __init__(self, id, title, description, price, analise, publico, ideias_videos, url, urlEncurtado):
+    def __init__(self, id, user, title, description, price, analise, publico, ideias_videos, url, urlEncurtado):
         self.id = id
+        self.user = user
         self.title = title 
         self.description = description 
         self.price = price 
